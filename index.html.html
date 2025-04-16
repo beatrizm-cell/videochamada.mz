@@ -103,15 +103,16 @@
     }
 
     .controls {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 30px;
-      z-index: 10;
-      padding: 10px;
-    }
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 30px;
+  z-index: 10;
+  padding: 10px;
+}
+
 
     .circle-btn {
   width: 48px;
@@ -195,7 +196,7 @@
       <button class="circle-btn" onclick="toggleMic()" title="Microfone">🎤</button>
       <button class="circle-btn end-call" onclick="encerrarChamada()" title="Encerrar">📞</button>
       <button class="circle-btn" onclick="toggleMute()" title="Áudio">🔊</button>
-    </div>
+    </div>    
   </div>
   <div class="webcam-container">
     <video id="webcam" autoplay muted playsinline></video>
