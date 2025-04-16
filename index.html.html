@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Videochamada Simulada</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: Arial, sans-serif;
@@ -69,12 +65,26 @@
     .video-principal {
       flex: 1;
       position: relative;
+      background: black;
     }
 
-    .video-principal video {
+    .video-wrapper {
       width: 100%;
       height: 100%;
+      position: relative;
+      overflow: hidden;
+      background: black;
+    }
+
+    .video-wrapper video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 100%;
+      min-height: 100%;
       object-fit: cover;
+      z-index: 1;
     }
 
     .webcam-container {
@@ -93,22 +103,41 @@
 
     .controls {
       position: absolute;
-      bottom: 20px;
+      bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 15px;
+      gap: 30px;
       z-index: 10;
     }
 
-    .control-btn {
-      background: rgba(0, 0, 0, 0.6);
+    .circle-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
       border: none;
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(4px);
       color: white;
-      padding: 10px 16px;
-      border-radius: 50px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
       cursor: pointer;
-      font-size: 16px;
+    }
+
+    .circle-btn:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .end-call {
+      background-color: #e53935;
+      color: white;
+    }
+
+    .end-call:hover {
+      background-color: #d32f2f;
     }
 
     @media (max-width: 768px) {
@@ -151,17 +180,16 @@
 <!-- Videochamada -->
 <div id="chamada" class="call-container">
   <div class="video-principal">
-    <div class="video-principal">
-      <!-- vídeo local ou direto por link -->
-      <video id="video-chamada" playsinline>
+    <div class="video-wrapper">
+      <video id="video-chamada" playsinline muted>
         <source src="video-simulacao.mp4" type="video/mp4">
         Seu navegador não suporta vídeo.
       </video>
-  
+    </div>
     <div class="controls">
-      <button class="control-btn" onclick="encerrarChamada()">Encerrar</button>
-      <button class="control-btn" onclick="toggleMute()">Mutar</button>
-      <button class="control-btn" onclick="toggleMic()">Microfone</button>
+      <button class="circle-btn" onclick="toggleMic()" title="Microfone">🎤</button>
+      <button class="circle-btn end-call" onclick="encerrarChamada()" title="Encerrar">📞</button>
+      <button class="circle-btn" onclick="toggleMute()" title="Alto-falante">🔊</button>
     </div>
   </div>
   <div class="webcam-container">
@@ -173,11 +201,12 @@
 <div id="popup-final" class="overlay hidden">
   <h2>⏱️ Sua chamada chegou ao fim</h2>
   <p>Para continuar a chamada, envie o pagamento pelo WhatsApp clicando no botão abaixo.</p>
-  <a href="https://wa.me/seunumerodowhatsapp" class="btn" target="_blank">Pagar no WhatsApp</a>
+  <a href="https://wa.me/25884SEUNUMERO" class="btn" target="_blank">Pagar no WhatsApp</a>
 </div>
 
 <script>
   let chamadaIniciada = false;
+  let temporizador;
 
   function iniciarChamada() {
     document.getElementById('popup-inicio').classList.add('hidden');
@@ -194,7 +223,7 @@
   function tocarVideoSimulado() {
     const video = document.getElementById('video-chamada');
     video.currentTime = 0;
-    video.muted = false; // ativa som se quiser
+    video.muted = false;
     video.play().then(() => {
       iniciarContadorChamada();
     }).catch(err => {
@@ -207,13 +236,14 @@
     if (chamadaIniciada) return;
     chamadaIniciada = true;
 
-    setTimeout(() => {
+    temporizador = setTimeout(() => {
       document.getElementById('chamada').style.display = 'none';
       document.getElementById('popup-final').classList.remove('hidden');
-    }, 30000); // 30 segundos
+    }, 30000);
   }
 
   function encerrarChamada() {
+    clearTimeout(temporizador);
     document.getElementById('chamada').style.display = 'none';
     document.getElementById('popup-final').classList.remove('hidden');
   }
@@ -232,14 +262,16 @@
   }
 
   function startWebcam() {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
       .then(stream => {
         const webcam = document.getElementById('webcam');
         webcam.srcObject = stream;
         window.localStream = stream;
+        webcam.play();
       })
       .catch(err => {
-        console.error("Erro ao acessar webcam:", err);
+        console.error("Erro ao acessar a câmera:", err);
+        alert("Permita o acesso à câmera para participar da chamada.");
       });
   }
 </script>
