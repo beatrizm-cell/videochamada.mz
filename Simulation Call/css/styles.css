@@ -1,0 +1,36 @@
+.error{
+    color: red;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+}
+h5 {
+    font-weight: 600;
+}
+
+img.appImage {
+    height: 25px;
+    width: 25px;
+}
+.filter-btn{
+    margin-left: 850px;
+}
+.filter-select{
+    margin-left: 856px;
+   
+}
+table td {
+    max-width: 200px; /* Example width */
+    word-wrap: break-word; /* Standard property */
+    overflow-wrap: break-word; /* For broader support */
+    white-space: normal; /* Ensures text wraps within the cell */
+}
+
+    /* Custom CSS for changing active navigation item color */
+    .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active, .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
+    background-color: #007BFF;
+    color: #fff;
+}
+.nav-link p {color: #fff !important;}

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Videochamada Simulada</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: black;
+      overflow: hidden;
+    }
+
+    .hidden { display: none !important; }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.95);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 18px;
+      background: #00c853;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .spinner {
+      margin-top: 20px;
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255,255,255,0.2);
+      border-top: 5px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .call-container {
+      display: none;
+      flex-direction: row;
+      height: 100vh;
+    }
+
+    .video-principal {
+      flex: 1;
+      position: relative;
+    }
+
+    .video-principal video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .webcam-container {
+      width: 300px;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    video#webcam {
+      width: 90%;
+      border-radius: 8px;
+      background: #000;
+    }
+
+    .controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 10;
+    }
+
+    .control-btn {
+      background: rgba(0, 0, 0, 0.6);
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .call-container {
+        flex-direction: column;
+      }
+
+      .webcam-container {
+        position: absolute;
+        bottom: 80px;
+        right: 10px;
+        width: 120px;
+        height: 160px;
+        z-index: 9;
+        box-shadow: 0 0 10px rgba(255,255,255,0.3);
+      }
+
+      video#webcam {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Popup de entrada -->
+<div id="popup-inicio" class="overlay">
+  <h1>📞 Recebendo chamada de vídeo...</h1>
+  <button class="btn" onclick="iniciarChamada()">Atender</button>
+</div>
+
+<!-- Popup de loading -->
+<div id="popup-loading" class="overlay hidden">
+  <h2>🔄 Verificando conexão...</h2>
+  <div class="spinner"></div>
+</div>
+
+<!-- Videochamada -->
+<div id="chamada" class="call-container">
+  <div class="video-principal">
+    <div class="video-principal">
+      <!-- vídeo local ou direto por link -->
+      <video id="video-chamada" playsinline>
+        <source src="video-simulacao.mp4" type="video/mp4">
+        Seu navegador não suporta vídeo.
+      </video>
+  
+    <div class="controls">
+      <button class="control-btn" onclick="encerrarChamada()">Encerrar</button>
+      <button class="control-btn" onclick="toggleMute()">Mutar</button>
+      <button class="control-btn" onclick="toggleMic()">Microfone</button>
+    </div>
+  </div>
+  <div class="webcam-container">
+    <video id="webcam" autoplay muted playsinline></video>
+  </div>
+</div>
+
+<!-- Final -->
+<div id="popup-final" class="overlay hidden">
+  <h2>⏱️ Sua chamada chegou ao fim</h2>
+  <p>Para continuar a chamada, envie o pagamento pelo WhatsApp clicando no botão abaixo.</p>
+  <a href="https://wa.me/seunumerodowhatsapp" class="btn" target="_blank">Pagar no WhatsApp</a>
+</div>
+
+<script>
+  let chamadaIniciada = false;
+
+  function iniciarChamada() {
+    document.getElementById('popup-inicio').classList.add('hidden');
+    document.getElementById('popup-loading').classList.remove('hidden');
+
+    setTimeout(() => {
+      document.getElementById('popup-loading').classList.add('hidden');
+      document.getElementById('chamada').style.display = 'flex';
+      startWebcam();
+      tocarVideoSimulado();
+    }, 2500);
+  }
+
+  function tocarVideoSimulado() {
+    const video = document.getElementById('video-chamada');
+    video.currentTime = 0;
+    video.muted = false; // ativa som se quiser
+    video.play().then(() => {
+      iniciarContadorChamada();
+    }).catch(err => {
+      console.error("Erro ao iniciar o vídeo:", err);
+      alert("Erro ao carregar a videochamada. Verifique sua conexão ou tente outro navegador.");
+    });
+  }
+
+  function iniciarContadorChamada() {
+    if (chamadaIniciada) return;
+    chamadaIniciada = true;
+
+    setTimeout(() => {
+      document.getElementById('chamada').style.display = 'none';
+      document.getElementById('popup-final').classList.remove('hidden');
+    }, 30000); // 30 segundos
+  }
+
+  function encerrarChamada() {
+    document.getElementById('chamada').style.display = 'none';
+    document.getElementById('popup-final').classList.remove('hidden');
+  }
+
+  function toggleMute() {
+    const stream = window.localStream;
+    if (!stream) return;
+    stream.getAudioTracks().forEach(track => {
+      track.enabled = !track.enabled;
+    });
+  }
+
+  function toggleMic() {
+    const webcam = document.getElementById("webcam");
+    webcam.muted = !webcam.muted;
+  }
+
+  function startWebcam() {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then(stream => {
+        const webcam = document.getElementById('webcam');
+        webcam.srcObject = stream;
+        window.localStream = stream;
+      })
+      .catch(err => {
+        console.error("Erro ao acessar webcam:", err);
+      });
+  }
+</script>
+
+</body>
+</html>
+
+
+
