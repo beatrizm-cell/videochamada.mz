@@ -15,6 +15,10 @@
 
     .hidden { display: none !important; }
 
+    :root {
+  --vh: 100%;
+}
+
     .overlay {
       position: fixed;
       top: 0; left: 0;
@@ -234,6 +238,14 @@
       document.getElementById('popup-final').classList.remove('hidden');
     }
   };
+
+  function setFullHeight() {
+  let vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+setFullHeight();
+window.addEventListener('resize', setFullHeight);
+
 
   function iniciarChamada() {
     document.getElementById('popup-inicio').classList.add('hidden');
